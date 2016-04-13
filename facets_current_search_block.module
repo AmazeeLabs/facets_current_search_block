@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function facets_current_search_block_theme() {
+  return [
+    'facets_current_search_item' => [
+      'variables' => [
+        'label' => '',
+        'url' => '#',
+      ],
+    ],
+  ];
+}

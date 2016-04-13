@@ -1,0 +1,8 @@
+type: module
+name: Facets Current Search Block
+description: Provides a block describing the current search.
+core: 8.x
+package: Custom
+
+dependencies:
+  - facets
