@@ -84,9 +84,9 @@ class CurrentSearchFacet extends CurrentSearchBase {
       /** @var \Drupal\facets\FacetManager\DefaultFacetManager $facet_manager */
       $facet_manager = \Drupal::service('facets.manager');
       $facet = $facet_manager->returnProcessedFacet($facet);
-      foreach ($facet->getResults() as $result) {
+      foreach ($facet->getResults() as $index => $result) {
         if ($result->isActive()) {
-          $build[$facet->id()] = [
+          $build[$facet->id()][$index] = [
             '#theme' => 'facets_current_search_item',
             '#label' => $result->getDisplayValue(),
             '#url' => $result->getUrl(),
