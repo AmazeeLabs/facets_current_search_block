@@ -59,32 +59,7 @@ class CurrentSearchResetLink extends CurrentSearchBase {
   public function build() {
     $build = [];
 
-    /** @var \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_manager */
-    $facet_source_manager = \Drupal::service('plugin.manager.facets.facet_source');
-    /** @var \Drupal\facets\FacetSource\FacetSourcePluginInterface $facet_source */
-    $facet_source = $facet_source_manager->createInstance($this->configuration['source_id']);
-
-    $reset_url = Url::fromUserInput($facet_source->getPath());
-    $request = \Drupal::request();
-    $current_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
-
-    // Ignore "page" and all the empty query parameters.
-    $parsed = parse_url($current_url);
-    parse_str(isset($parsed['query']) ? $parsed['query'] : '', $query);
-    foreach ($query as $key => $value) {
-      if ($key == 'page' || $value === '') {
-        unset($query[$key]);
-      }
-    }
-    if (count($query)) {
-      $parsed['query'] = http_build_query($query);
-    }
-    else {
-      unset($parsed['query']);
-    }
-    $current_url = $this->buildUrl($parsed);
-
-    if ($current_url != $reset_url->setAbsolute()->toString()) {
+    if (self::isResetLinkRequired($this->configuration['source_id'], $reset_url)) {
       $build = [
         '#type' => 'html_tag',
         '#tag' => 'span',
@@ -110,7 +85,7 @@ class CurrentSearchResetLink extends CurrentSearchBase {
    *
    * @return string
    */
-  public function buildUrl($parsed_url) {
+  public static function buildUrl($parsed_url) {
     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -121,6 +96,48 @@ class CurrentSearchResetLink extends CurrentSearchBase {
     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
     $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
     return "$scheme$user$pass$host$port$path$query$fragment";
+  }
+
+  /**
+   * Checks whether the Reset button should be displayed.
+   *
+   * This function can be used by other modules.
+   *
+   * @param string $facet_source_id
+   *   The ID of the facet source.
+   *
+   * @param \Drupal\Core\Url|null $reset_url
+   *   Used to return the reset URL.
+   *
+   * @return bool
+   */
+  public static function isResetLinkRequired($facet_source_id, &$reset_url = NULL) {
+    /** @var \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_manager */
+    $facet_source_manager = \Drupal::service('plugin.manager.facets.facet_source');
+    /** @var \Drupal\facets\FacetSource\FacetSourcePluginInterface $facet_source */
+    $facet_source = $facet_source_manager->createInstance($facet_source_id);
+
+    $reset_url = Url::fromUserInput($facet_source->getPath());
+    $request = \Drupal::request();
+    $current_url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
+
+    // Ignore "page" and all the empty query parameters.
+    $parsed = parse_url($current_url);
+    parse_str(isset($parsed['query']) ? $parsed['query'] : '', $query);
+    foreach ($query as $key => $value) {
+      if ($key == 'page' || $value === '') {
+        unset($query[$key]);
+      }
+    }
+    if (count($query)) {
+      $parsed['query'] = http_build_query($query);
+    }
+    else {
+      unset($parsed['query']);
+    }
+    $current_url = self::buildUrl($parsed);
+
+    return $current_url != $reset_url->setAbsolute()->toString();
   }
 
 }
