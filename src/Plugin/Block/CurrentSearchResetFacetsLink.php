@@ -84,15 +84,11 @@ class CurrentSearchResetFacetsLink extends CurrentSearchBase {
     $build = [];
 
     if ($reset) {
-      $build = [
-        '#type' => 'html_tag',
-        '#tag' => 'span',
-        '#attributes' => ['class' => ['facets-current-search--reset-link']],
-      ];
       $build['reset_link'] = [
         '#type' => 'link',
         '#title' => $this->configuration['link_text'],
         '#url' => $reset_url,
+        '#attributes' => ['class' => ['facets-current-search--reset-link']],
       ];
     }
 
