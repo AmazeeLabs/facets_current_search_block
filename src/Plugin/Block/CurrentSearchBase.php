@@ -18,14 +18,43 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class CurrentSearchBase extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
+   * @var \Drupal\Component\Plugin\PluginManagerInterface
+   */
+  protected $facetSourcePluginManager;
+
+  /**
+   * @var \Drupal\facets\FacetManager\DefaultFacetManager
+   */
+  protected $facetsManager;
+
+  /**
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition
+      $plugin_definition,
+      $container->get('plugin.manager.facets.facet_source'),
+      $container->get('facets.manager'),
+      $container->get('request_stack')->getCurrentRequest()
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, $facet_source_manager, $facets_manager, $request) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->setConfiguration($configuration);
+    $this->facetSourcePluginManager = $facet_source_manager;
+    $this->facetsManager = $facets_manager;
+    $this->request = $request;
   }
 
   /**
