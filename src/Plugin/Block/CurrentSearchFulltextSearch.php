@@ -27,8 +27,9 @@ class CurrentSearchFulltextSearch extends CurrentSearchBase {
   public function build() {
     $build = [];
 
-    @list($plugin_type, $view_name) = explode(':', $this->configuration['source_id']);
-    if ($plugin_type == 'search_api_views') {
+    $plugin_type = explode(':', $this->configuration['source_id'])[0];
+    $view_name = explode('_', $this->configuration['source_id'])[4];
+    if ($plugin_type == 'search_api') {
       /** @var \Drupal\views\Entity\View $view */
       if ($view = View::load($view_name)) {
         $view_executable = $view->getExecutable();
