@@ -26,7 +26,6 @@ class CurrentSearchResetFacetsLink extends CurrentSearchBase {
    */
   public function defaultConfiguration() {
     return [
-      // @todo: this config setting should be translatable.
       'link_text' => 'Reset',
     ] + parent::defaultConfiguration();
   }
@@ -86,7 +85,10 @@ class CurrentSearchResetFacetsLink extends CurrentSearchBase {
     if ($reset) {
       $build['reset_link'] = [
         '#type' => 'link',
-        '#title' => $this->configuration['link_text'],
+        '#title' => $this->t($this->configuration['link_text']),
+        '#cache' => [
+          'contexts' => ['languages:language_interface'],
+        ],
         '#url' => $reset_url,
         '#attributes' => ['class' => ['facets-current-search--reset-link']],
       ];

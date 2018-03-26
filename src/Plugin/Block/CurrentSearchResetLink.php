@@ -26,7 +26,6 @@ class CurrentSearchResetLink extends CurrentSearchBase {
    */
   public function defaultConfiguration() {
     return [
-      // @todo: this config setting should be translatable.
       'link_text' => 'Reset',
     ] + parent::defaultConfiguration();
   }
@@ -67,7 +66,10 @@ class CurrentSearchResetLink extends CurrentSearchBase {
       ];
       $build['reset_link'] = [
         '#type' => 'link',
-        '#title' => $this->configuration['link_text'],
+        '#title' => $this->t($this->configuration['link_text']),
+        '#cache' => [
+          'contexts' => ['languages:language_interface'],
+        ],
         '#url' => $reset_url,
       ];
     }
